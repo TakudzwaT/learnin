@@ -1,0 +1,28 @@
+# STUDENT CODE: Q4
+def id3(data, target, features):
+    """
+    Builds a decision tree using the ID3 algorithm.
+
+    Args:
+        data (pd.DataFrame): The dataset.
+        target (str): The target variable.
+        features (list): A list of available features.
+
+    Returns:
+        dict: The decision tree.
+    """
+    if len(data[target].unique()) == 1:
+        return data[target].iloc[0]
+    
+    if not features:
+        return data[target].mode()[0]
+    
+    best_feature = find_best_feature(data, target)
+    tree = {best_feature: {}}
+    
+    for feature_value in data[best_feature].unique():
+        subset = data[data[best_feature] == feature_value].drop(columns=[best_feature])
+        subtree = id3(subset, target, [f for f in features if f != best_feature])
+        tree[best_feature][feature_value] = subtree
+    
+    return tree
